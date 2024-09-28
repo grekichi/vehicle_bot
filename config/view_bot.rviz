@@ -8,6 +8,7 @@ Panels:
         - /Status1
         - /TF1
         - /RobotModel1
+        - /RobotModel1/Status1
       Splitter Ratio: 0.5
     Tree Height: 494
   - Class: rviz_common/Selection
@@ -54,6 +55,8 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: true
+        base_footprint:
+          Value: true
         base_link:
           Value: true
         caster_wheel:
@@ -70,14 +73,15 @@ Visualization Manager:
       Show Axes: true
       Show Names: true
       Tree:
-        base_link:
-          chassis:
-            caster_wheel:
+        base_footprint:
+          base_link:
+            chassis:
+              caster_wheel:
+                {}
+            left_wheel:
               {}
-          left_wheel:
-            {}
-          right_wheel:
-            {}
+            right_wheel:
+              {}
       Update Interval: 0
       Value: true
     - Alpha: 1
@@ -98,6 +102,10 @@ Visualization Manager:
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
+        base_footprint:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         base_link:
           Alpha: 1
           Show Axes: false
@@ -133,7 +141,7 @@ Visualization Manager:
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
-    Fixed Frame: base_link
+    Fixed Frame: base_footprint
     Frame Rate: 30
   Name: root
   Tools:
@@ -176,7 +184,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 1.1089295148849487
+      Distance: 1.3992257118225098
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -191,10 +199,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.5202019810676575
+      Pitch: 0.37539801001548767
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 0.9285544157028198
+      Yaw: 0.7353896498680115
     Saved: ~
 Window Geometry:
   Displays:
