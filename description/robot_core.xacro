@@ -19,6 +19,10 @@
         <color rgba="0 0 0 1" />
     </material>
 
+    <material name="red">
+        <color rgba="1 0 0 1" />
+    </material>
+
     <!-- BASE FOOTPRINT -->
     <link name="base_footprint"/>
 
@@ -154,6 +158,8 @@
 
     <gazebo reference="caster_wheel">
         <material>Gazebo/Black</material>
+        <mu1 value="0.001"/>
+        <mu2 value="0.001"/>
     </gazebo>
 
 </robot>
