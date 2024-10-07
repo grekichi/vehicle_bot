@@ -76,6 +76,8 @@
         <child link="left_wheel"/>
         <origin xyz="0 0.175 0" rpy="-${pi/2} 0 0"/>
         <axis xyz="0 0 1"/>
+        <limit effort="200" velocity="10"/>
+        <dynamics damping="1.0" friction="1.0"/>
     </joint>
 
     <link name="left_wheel">
@@ -95,7 +97,9 @@
         </xacro:inertial_cylinder>
     </link>
 
-    <gazebo reference="lef_wheel">
+    <gazebo reference="left_wheel">
+        <mu1>0.2</mu1>
+        <mu2>0.2</mu2>
         <material>Gazebo/Blue</material>
     </gazebo>
 
@@ -107,6 +111,8 @@
         <child link="right_wheel"/>
         <origin xyz="0 -0.175 0" rpy="${pi/2} 0 0"/>
         <axis xyz="0 0 -1"/>
+        <limit effort="200" velocity="10"/>
+        <dynamics damping="1.0" friction="1.0"/>
     </joint>
 
     <link name="right_wheel">
@@ -127,6 +133,8 @@
     </link>
 
     <gazebo reference="right_wheel">
+        <mu1>0.2</mu1>
+        <mu2>0.2</mu2>
         <material>Gazebo/Blue</material>
     </gazebo>
 

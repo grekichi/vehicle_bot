@@ -12,7 +12,7 @@
             <geometry>
                 <cylinder radius="0.05" length="0.04"/>
             </geometry>
-            <material name="red "/>
+            <material name="red"/>
         </visual>
         <collision>
             <geometry>
@@ -27,10 +27,11 @@
     <gazebo reference="laser_frame">
         <material>Gazebo/Red</material>
 
-        <sensor name="laser" type="ray">
-            <pose> 0 0 0 0 0 0 </pose>
-            <visualize>false</visualize>  <!-- if want to use, to change flag "true"-->
+        <sensor name="gpu_lidar" type="gpu_lidar">
+            <pose relative_to='laser_frame'> 0 0 0 0 0 0 </pose>
+            <topic>lidar</topic>
             <update_rate>10</update_rate>
+            <visualize>true</visualize>  <!-- if want to use, to change flag "true"-->
             <ray>
                 <scan>
                     <horizontal>
@@ -44,12 +45,8 @@
                     <max>12</max>
                 </range>
             </ray>
-            <plugin name="laser_controller" filename="libgazebo_ros_ray_sensor.so">
-                <ros>
-                    <argument>~/out:=scan</argument>
-                </ros>
-                <output_type>sensor_msgs/LaserScan</output_type>
-                <frame_name>laser_frame</frame_name>
+            <plugin name="gz::sim::systems::Sensors" filename="gz-sim-sensors-system">
+                <render_engine>ogre2</render_engine>
             </plugin>
         </sensor>
     </gazebo>

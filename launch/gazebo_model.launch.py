@@ -15,10 +15,15 @@ def generate_launch_description():
     # Include the robot_state_publisher launch file, provided by our own package. Force sim time to be enabled
     # !!! MAKE SURE YOU SET THE PACKAGE NAME CORRECTLY !!!
 
-    package_name='vehicle_bot' #<--- CHANGE ME
+    # this name has to match the robot name in the Xacro file
+    robotXacroName='differential_drive_robot'
+
+    # this is the name of our package, at the same time this is the name of the folder
+    # that will be used to define the paths 
+    package_name='vehicle_bot'
 
     # this is a relative path to the xacro file defining the model
-    modelFileRelativePath = 'description/robot_core.xacro'
+    modelFileRelativePath = 'description/robot.urdf.xacro'
 
     # this is the absolute path to the model
     pathModelFile = os.path.join(
@@ -29,35 +34,29 @@ def generate_launch_description():
     # get the robot description from the xacro model file
     robotDescription = xacro.process_file(pathModelFile).toxml()
 
-
-    rsp = IncludeLaunchDescription(
-                PythonLaunchDescriptionSource(os.path.join(
-                    get_package_share_directory(package_name),'launch','rsp.launch.py')),
-                    launch_arguments={'use_sim_time': 'true', 'use_ros2_control': 'true'}.items()
-    )
-
-    gazebo_params_file = os.path.join(
-        get_package_share_directory(package_name),
-        'config',
-        'gazebo_params.yaml'
-        )
+    # gazebo_params_file = os.path.join(
+    #     get_package_share_directory(package_name),
+    #     'config',
+    #     'gazebo_params.yaml'
+    #     )
 
     # Include the Gazebo launch file, provided by the gazebo_ros package
-    gazebo = IncludeLaunchDescription(
+    gazeboLaunch = IncludeLaunchDescription(
                 PythonLaunchDescriptionSource(os.path.join(
                     get_package_share_directory('ros_gz_sim'), 'launch', 'gz_sim.launch.py')),
                     launch_arguments={
-                        'gz_args': ' -r -v 4 empty.sdf',
-                        'extra_gazebo_args': '--ros-args --params-file' + gazebo_params_file}.items()
+                        'gz_args': ['-r -v -v4 empty.sdf'],
+                        'on_exit_shutdown': 'true'}.items()
              )
 
     # Run the spawner node from the gazebo_ros package. The entity name doesn't really matter if you only have a single robot.
-    spawn_entity = Node(package='ros_gz_sim',
-                        executable='create',
-                        arguments=['-topic', 'robot_description', '-name', 'my_bot'],
-                        output='screen')
+    spawnModelNodeGazebo = Node(
+        package='ros_gz_sim',
+        executable='create',
+        arguments=['-topic', 'robot_description', '-name', robotXacroName],
+        output='screen'
+    )
     
-
     # Robot State Publisher Node
     nodeRobotStatePublisher = Node(
         package='robot_state_publisher',
@@ -84,26 +83,10 @@ def generate_launch_description():
         output='screen',
     )
 
-    # # additional portion
-    # diff_drive_spawner = Node(
-    #     package='controller_manager',
-    #     executable='spawner',
-    #     arguments=["diff_cont"],
-    # )
-
-    # joint_broad_spawner = Node(
-    #     package='controller_manager',
-    #     executable='spawner',
-    #     arguments=["joint_broad"],
-    # )
-
     # Launch them all!
     return LaunchDescription([
-        rsp,
-        gazebo,
-        spawn_entity,
+        gazeboLaunch,
+        spawnModelNodeGazebo,
         nodeRobotStatePublisher,
         start_gazebo_ros_bridge_cmd,
-        # diff_drive_spawner,
-        # joint_broad_spawner,
     ])
