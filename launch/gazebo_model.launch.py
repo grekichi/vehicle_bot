@@ -3,9 +3,9 @@ import os
 from ament_index_python.packages import get_package_share_directory
 
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription
+from launch.actions import IncludeLaunchDescription, SetLaunchConfiguration, SetEnvironmentVariable
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-
+from launch.substitutions import PathJoinSubstitution, LaunchConfiguration, TextSubstitution
 from launch_ros.actions import Node
 
 import xacro
@@ -29,24 +29,36 @@ def generate_launch_description():
     pathModelFile = os.path.join(
         get_package_share_directory(package_name),
         modelFileRelativePath
-        )
+    )
 
     # get the robot description from the xacro model file
     robotDescription = xacro.process_file(pathModelFile).toxml()
 
-    # gazebo_params_file = os.path.join(
-    #     get_package_share_directory(package_name),
-    #     'config',
-    #     'gazebo_params.yaml'
-    #     )
+    """ Gazebo modify sentence """
+    gz_model_path = os.path.join(get_package_share_directory(package_name), 'worlds')
+
+    # if you create your original sdf, you should set this name
+    sdf_file_name = 'test.sdf'
+
+    setLaunchConfig = SetLaunchConfiguration(
+        name='sdf_file',
+        value=[TextSubstitution(text=sdf_file_name)]
+    )
+
+    setEnvVariable = SetEnvironmentVariable('GZ_SIM_RESOURCE_PATH', gz_model_path)
+
+    # setting for gz_args
+    world_path = os.path.join(gz_model_path, sdf_file_name)
+    gz_args = f'-r -v4 {world_path}'
 
     # Include the Gazebo launch file, provided by the gazebo_ros package
-    gazeboLaunch = IncludeLaunchDescription(
+    gazebo = IncludeLaunchDescription(
                 PythonLaunchDescriptionSource(os.path.join(
                     get_package_share_directory('ros_gz_sim'), 'launch', 'gz_sim.launch.py')),
                     launch_arguments={
-                        'gz_args': ['-r -v -v4 empty.sdf'],
-                        'on_exit_shutdown': 'true'}.items()
+                        'gz_args': gz_args,
+                        'on_exit_shutdown': 'true'
+                    }.items(),
              )
 
     # Run the spawner node from the gazebo_ros package. The entity name doesn't really matter if you only have a single robot.
@@ -83,10 +95,26 @@ def generate_launch_description():
         output='screen',
     )
 
+    # rviz2 load setting
+    rviz_config_file = os.path.join(
+        get_package_share_directory(package_name), 'config', 'view_bot.rviz')
+    
+    rviz = Node(
+        package='rviz2',
+        executable='rviz2',
+        name='rviz2',
+        output='log',
+        arguments=['-d', rviz_config_file],
+    )
+
+
     # Launch them all!
     return LaunchDescription([
-        gazeboLaunch,
+        setLaunchConfig,
+        setEnvVariable,
+        gazebo,
         spawnModelNodeGazebo,
         nodeRobotStatePublisher,
         start_gazebo_ros_bridge_cmd,
+        rviz,
     ])

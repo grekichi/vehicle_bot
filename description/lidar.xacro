@@ -27,12 +27,14 @@
     <gazebo reference="laser_frame">
         <material>Gazebo/Red</material>
 
-        <sensor name="gpu_lidar" type="gpu_lidar">
-            <pose relative_to='laser_frame'> 0 0 0 0 0 0 </pose>
-            <topic>lidar</topic>
+        <sensor name="laser_frame" type="gpu_lidar">
+            <pose> 0 0 0 0 0 0 </pose>
+            <topic>scan</topic>
             <update_rate>10</update_rate>
+            <always_on>true</always_on>
             <visualize>true</visualize>  <!-- if want to use, to change flag "true"-->
-            <ray>
+            <gz_frame_id>laser_frame</gz_frame_id>
+            <lidar>
                 <scan>
                     <horizontal>
                         <samples>360</samples>
@@ -44,8 +46,8 @@
                     <min>0.3</min>
                     <max>12</max>
                 </range>
-            </ray>
-            <plugin name="gz::sim::systems::Sensors" filename="gz-sim-sensors-system">
+            </lidar>
+            <plugin filename="gz-sim-sensors-system" name="gz::sim::systems::Sensors">
                 <render_engine>ogre2</render_engine>
             </plugin>
         </sensor>
