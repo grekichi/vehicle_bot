@@ -48,10 +48,14 @@
                     <far>8.0</far>
                 </clip>
             </camera>
+            
             <!-- <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
                 <frame_name>camera_link_optical</frame_name>
             </plugin> -->
         </sensor>
+        <!-- <plugin filename="gz-sim-sensors-system" name="gz::sim::systems::Sensors">
+            <render_engine>ogre2</render_engine>
+        </plugin> -->
     </gazebo>
 
 </robot>

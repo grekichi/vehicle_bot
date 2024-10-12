@@ -38,7 +38,7 @@ def generate_launch_description():
     gz_model_path = os.path.join(get_package_share_directory(package_name), 'worlds')
 
     # if you create your original sdf, you should set this name
-    sdf_file_name = 'test.sdf'
+    sdf_file_name = 'vehicle_test.sdf'
 
     setLaunchConfig = SetLaunchConfiguration(
         name='sdf_file',
