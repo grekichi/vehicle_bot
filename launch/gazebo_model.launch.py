@@ -22,17 +22,30 @@ def generate_launch_description():
     # that will be used to define the paths 
     package_name='vehicle_bot'
 
+    """ if you don't use below 'rsp', you should use this program """
     # this is a relative path to the xacro file defining the model
     modelFileRelativePath = 'description/robot.urdf.xacro'
-
     # this is the absolute path to the model
     pathModelFile = os.path.join(
         get_package_share_directory(package_name),
         modelFileRelativePath
-    )
-
+        )
     # get the robot description from the xacro model file
     robotDescription = xacro.process_file(pathModelFile).toxml()
+    # Robot State Publisher Node
+    nodeRobotStatePublisher = Node(
+        package='robot_state_publisher',
+        executable='robot_state_publisher',
+        output='screen',
+        parameters=[{'robot_description': robotDescription, 'use_sim_time': True}]
+        )
+
+    # # base launch program
+    # rsp = IncludeLaunchDescription(
+    #     PythonLaunchDescriptionSource([os.path.join(
+    #         get_package_share_directory(package_name), 'launch', 'rsp.launch.py')]),
+    #     launch_arguments={'use_sim_time': 'true'}.items()
+    #     )
 
     """ Gazebo modify sentence """
     gz_model_path = os.path.join(get_package_share_directory(package_name), 'worlds')
@@ -51,15 +64,22 @@ def generate_launch_description():
     world_path = os.path.join(gz_model_path, sdf_file_name)
     gz_args = f'-r -v4 {world_path}'
 
+    gazebo_params_file = os.path.join(
+        get_package_share_directory(package_name),
+        'config',
+        'gazebo_params.yaml'
+    )
+
     # Include the Gazebo launch file, provided by the gazebo_ros package
     gazebo = IncludeLaunchDescription(
-                PythonLaunchDescriptionSource(os.path.join(
-                    get_package_share_directory('ros_gz_sim'), 'launch', 'gz_sim.launch.py')),
+                PythonLaunchDescriptionSource([os.path.join(
+                    get_package_share_directory('ros_gz_sim'), 'launch', 'gz_sim.launch.py')]),
                     launch_arguments={
                         'gz_args': gz_args,
-                        'on_exit_shutdown': 'true'
+                        'on_exit_shutdown': 'true',
+                        'extra_gazebo_args': '--ros-args --params-file' + gazebo_params_file,
                     }.items(),
-             )
+    )
 
     # Run the spawner node from the gazebo_ros package. The entity name doesn't really matter if you only have a single robot.
     spawnModelNodeGazebo = Node(
@@ -69,14 +89,6 @@ def generate_launch_description():
         output='screen'
     )
     
-    # Robot State Publisher Node
-    nodeRobotStatePublisher = Node(
-        package='robot_state_publisher',
-        executable='robot_state_publisher',
-        output='screen',
-        parameters=[{'robot_description': robotDescription, 'use_sim_time': True}]
-    )
-
     # this is very important so we can control the robot from ROS2
     bridge_params = os.path.join(
         get_package_share_directory(package_name),
@@ -95,9 +107,18 @@ def generate_launch_description():
         output='screen',
     )
 
+    # joystick set
+    joystick = IncludeLaunchDescription(
+                PythonLaunchDescriptionSource([os.path.join(
+                    get_package_share_directory(package_name),
+                    'launch',
+                    'joystick.launch.py')]),
+                launch_arguments={'use_sim_time': 'true'}.items()
+    )
+
     # rviz2 load setting
     rviz_config_file = os.path.join(
-        get_package_share_directory(package_name), 'config', 'view_bot.rviz')
+        get_package_share_directory(package_name), 'config', 'actual_bot.rviz')
     
     rviz = Node(
         package='rviz2',
@@ -112,9 +133,11 @@ def generate_launch_description():
     return LaunchDescription([
         setLaunchConfig,
         setEnvVariable,
+        # rsp,
         gazebo,
         spawnModelNodeGazebo,
         nodeRobotStatePublisher,
         start_gazebo_ros_bridge_cmd,
-        rviz,
+        joystick,
+        rviz
     ])
