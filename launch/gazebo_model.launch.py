@@ -22,30 +22,30 @@ def generate_launch_description():
     # that will be used to define the paths 
     package_name='vehicle_bot'
 
-    """ if you don't use below 'rsp', you should use this program """
-    # this is a relative path to the xacro file defining the model
-    modelFileRelativePath = 'description/robot.urdf.xacro'
-    # this is the absolute path to the model
-    pathModelFile = os.path.join(
-        get_package_share_directory(package_name),
-        modelFileRelativePath
-        )
-    # get the robot description from the xacro model file
-    robotDescription = xacro.process_file(pathModelFile).toxml()
-    # Robot State Publisher Node
-    nodeRobotStatePublisher = Node(
-        package='robot_state_publisher',
-        executable='robot_state_publisher',
-        output='screen',
-        parameters=[{'robot_description': robotDescription, 'use_sim_time': True}]
-        )
-
-    # # base launch program
-    # rsp = IncludeLaunchDescription(
-    #     PythonLaunchDescriptionSource([os.path.join(
-    #         get_package_share_directory(package_name), 'launch', 'rsp.launch.py')]),
-    #     launch_arguments={'use_sim_time': 'true'}.items()
+    """ if you don't use below 'rsp', you should use this program (Aleksandar Haber version) """
+    # # this is a relative path to the xacro file defining the model
+    # modelFileRelativePath = 'description/robot.urdf.xacro'
+    # # this is the absolute path to the model
+    # pathModelFile = os.path.join(
+    #     get_package_share_directory(package_name),
+    #     modelFileRelativePath
     #     )
+    # # get the robot description from the xacro model file
+    # robotDescription = xacro.process_file(pathModelFile).toxml()
+    # # Robot State Publisher Node
+    # nodeRobotStatePublisher = Node(
+    #     package='robot_state_publisher',
+    #     executable='robot_state_publisher',
+    #     output='screen',
+    #     parameters=[{'robot_description': robotDescription, 'use_sim_time': True}]
+    #     )
+
+    # base launch program
+    rsp = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([os.path.join(
+            get_package_share_directory(package_name), 'launch', 'rsp.launch.py')]),
+        launch_arguments={'use_sim_time': 'true', 'use_ros2_control': 'false'}.items()
+        )
 
     """ Gazebo modify sentence """
     gz_model_path = os.path.join(get_package_share_directory(package_name), 'worlds')
@@ -77,7 +77,7 @@ def generate_launch_description():
                     launch_arguments={
                         'gz_args': gz_args,
                         'on_exit_shutdown': 'true',
-                        'extra_gazebo_args': '--ros-args --params-file' + gazebo_params_file,
+                        'extra_gazebo_args': '--ros-args --params-file ' + gazebo_params_file,
                     }.items(),
     )
 
@@ -133,10 +133,10 @@ def generate_launch_description():
     return LaunchDescription([
         setLaunchConfig,
         setEnvVariable,
-        # rsp,
+        rsp,
         gazebo,
         spawnModelNodeGazebo,
-        nodeRobotStatePublisher,
+        # nodeRobotStatePublisher,
         start_gazebo_ros_bridge_cmd,
         joystick,
         rviz

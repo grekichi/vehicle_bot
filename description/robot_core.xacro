@@ -73,7 +73,7 @@
         <child link="left_wheel"/>
         <origin xyz="0 0.175 0" rpy="-${pi/2} 0 0"/>
         <axis xyz="0 0 1"/>
-        <limit effort="200" velocity="10"/>
+        <limit effort="2000" velocity="10"/>
         <dynamics damping="1.0" friction="1.0"/>
     </joint>
 
@@ -107,7 +107,7 @@
         <child link="right_wheel"/>
         <origin xyz="0 -0.175 0" rpy="${pi/2} 0 0"/>
         <axis xyz="0 0 -1"/>
-        <limit effort="200" velocity="10"/>
+        <limit effort="2000" velocity="10"/>
         <dynamics damping="1.0" friction="1.0"/>
     </joint>
 
