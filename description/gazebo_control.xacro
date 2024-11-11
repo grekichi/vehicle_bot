@@ -14,7 +14,8 @@
             <wheel_diameter>0.066</wheel_diameter>
             
             <!-- Limits -->
-            <max_linear_acceleration>30</max_linear_acceleration>
+            <max_linear_acceleration>10</max_linear_acceleration>
+            <min_linear_acceleration>-10</min_linear_acceleration>
 
             <!-- Output -->
             <odom_topic>odom</odom_topic>
