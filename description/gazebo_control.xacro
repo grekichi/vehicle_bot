@@ -16,6 +16,8 @@
             <!-- Limits -->
             <max_linear_acceleration>10</max_linear_acceleration>
             <min_linear_acceleration>-10</min_linear_acceleration>
+            <max_linear_velocity>30</max_linear_velocity>
+            <min_linear_velocity>-30</min_linear_velocity>
 
             <!-- Output -->
             <odom_topic>odom</odom_topic>
