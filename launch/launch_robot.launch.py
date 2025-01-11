@@ -29,7 +29,7 @@ def generate_launch_description():
                     get_package_share_directory(package_name),'launch','joystick.launch.py')])
         )
 
-
+    # twist_mux section
     twist_mux_params = os.path.join(
         get_package_share_directory(package_name),
         'config',
@@ -43,7 +43,7 @@ def generate_launch_description():
             remappings=[('/cmd_vel_out','/diff_cont/cmd_vel_unstamped')]
         )
 
-
+    # delayed_controller_manager section
     robot_description = Command(['ros2 param get --hide-type /robot_state_publisher robot_description'])
 
     controller_params_file = os.path.join(get_package_share_directory(package_name),'config','my_controllers.yaml')
@@ -57,6 +57,7 @@ def generate_launch_description():
 
     delayed_controller_manager = TimerAction(period=3.0, actions=[controller_manager])
 
+    # delayed_diff_drive_spawner section
     diff_drive_spawner = Node(
         package="controller_manager",
         executable="spawner",
@@ -70,6 +71,7 @@ def generate_launch_description():
             )
         )
 
+    # delayed_joint_broad_spawner section
     joint_broad_spawner = Node(
         package="controller_manager",
         executable="spawner",

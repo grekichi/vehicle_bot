@@ -62,7 +62,7 @@ def generate_launch_description():
 
     # setting for gz_args
     world_path = os.path.join(gz_model_path, sdf_file_name)
-    gz_args = f'-r -v4 {world_path}'
+    gz_args = f'-r -v 4 {world_path}'
 
     gazebo_params_file = os.path.join(
         get_package_share_directory(package_name),

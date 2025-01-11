@@ -3,8 +3,9 @@ import os
 from ament_index_python.packages import get_package_share_directory
 
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription
+from launch.actions import IncludeLaunchDescription, SetLaunchConfiguration, SetEnvironmentVariable
 from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch.substitutions import TextSubstitution
 
 from launch_ros.actions import Node
 
@@ -36,6 +37,21 @@ def generate_launch_description():
                     launch_arguments={'use_sim_time': 'true', 'use_ros2_control': 'true'}.items()
     )
 
+    """ Gazebo modify sentence """
+    gz_model_path = os.path.join(get_package_share_directory(package_name), 'worlds')
+
+    # if you create your original sdf, you should set this name
+    sdf_file_name = 'vehicle_test.sdf'
+
+    setLaunchConfig = SetLaunchConfiguration(
+        name='sdf_file',
+        value=[TextSubstitution(text=sdf_file_name)]
+    )
+
+    setEnvVariable = SetEnvironmentVariable('GZ_SIM_RESOURCE_PATH', gz_model_path)
+
+
+
     gazebo_params_file = os.path.join(
         get_package_share_directory(package_name),
         'config',
@@ -47,7 +63,7 @@ def generate_launch_description():
                 PythonLaunchDescriptionSource(os.path.join(
                     get_package_share_directory('ros_gz_sim'), 'launch', 'gz_sim.launch.py')),
                     launch_arguments={
-                        'gz_args': ' -r -v 4 empty.sdf',
+                        'gz_args': ' -r -v 4 vehicle_test.sdf',
                         'extra_gazebo_args': '--ros-args --params-file' + gazebo_params_file}.items()
              )
 
@@ -99,6 +115,8 @@ def generate_launch_description():
 
     # Launch them all!
     return LaunchDescription([
+        setLaunchConfig,
+        setEnvVariable,
         rsp,
         gazebo,
         spawn_entity,
