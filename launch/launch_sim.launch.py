@@ -37,6 +37,15 @@ def generate_launch_description():
                     launch_arguments={'use_sim_time': 'true', 'use_ros2_control': 'true'}.items()
     )
 
+    # # addition of teleop twist keyboard 
+    # teleop_keyboard = Node(
+    #     package="teleop_twist_keyboard",
+    #     executable="teleop_twist_keyboard",
+    #     prefix="xterm -e",
+    #     parameters=[{'stamped': True}],
+    #     remappings=[('cmd_vel', '/diff_cont/cmd_vel')]
+    # )
+
     """ Gazebo modify sentence """
     gz_model_path = os.path.join(get_package_share_directory(package_name), 'worlds')
 
@@ -118,11 +127,13 @@ def generate_launch_description():
         arguments=["joint_broad"],
     )
 
+
     # Launch them all!
     return LaunchDescription([
         setLaunchConfig,
         setEnvVariable,
         rsp,
+        # teleop_keyboard,
         gazebo,
         spawn_entity,
         # nodeRobotStatePublisher,
