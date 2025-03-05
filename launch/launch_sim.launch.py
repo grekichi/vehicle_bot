@@ -50,6 +50,9 @@ def generate_launch_description():
 
     setEnvVariable = SetEnvironmentVariable('GZ_SIM_RESOURCE_PATH', gz_model_path)
 
+    # setting for gz_args
+    world_path = os.path.join(gz_model_path, sdf_file_name)
+    gz_args = f'-r -v 4 {world_path}'
 
 
     gazebo_params_file = os.path.join(
@@ -63,8 +66,10 @@ def generate_launch_description():
                 PythonLaunchDescriptionSource(os.path.join(
                     get_package_share_directory('ros_gz_sim'), 'launch', 'gz_sim.launch.py')),
                     launch_arguments={
-                        'gz_args': ' -r -v 4 vehicle_test.sdf',
-                        'extra_gazebo_args': '--ros-args --params-file' + gazebo_params_file}.items()
+                        'gz_args': gz_args,
+                        'on_exit_shutdown': 'true',
+                        'extra_gazebo_args': '--ros-args --params-file ' + gazebo_params_file
+                        }.items()
              )
 
     # Run the spawner node from the gazebo_ros package. The entity name doesn't really matter if you only have a single robot.
@@ -86,7 +91,7 @@ def generate_launch_description():
     bridge_params = os.path.join(
         get_package_share_directory(package_name),
         'parameters',
-        'bridge_parameters.yaml'
+        'gz_bridge.yaml'
     )
 
     start_gazebo_ros_bridge_cmd = Node(
@@ -100,18 +105,18 @@ def generate_launch_description():
         output='screen',
     )
 
-    # # additional portion
-    # diff_drive_spawner = Node(
-    #     package='controller_manager',
-    #     executable='spawner',
-    #     arguments=["diff_cont"],
-    # )
+    # additional portion
+    diff_drive_spawner = Node(
+        package='controller_manager',
+        executable='spawner',
+        arguments=["diff_cont"],
+    )
 
-    # joint_broad_spawner = Node(
-    #     package='controller_manager',
-    #     executable='spawner',
-    #     arguments=["joint_broad"],
-    # )
+    joint_broad_spawner = Node(
+        package='controller_manager',
+        executable='spawner',
+        arguments=["joint_broad"],
+    )
 
     # Launch them all!
     return LaunchDescription([
@@ -120,8 +125,8 @@ def generate_launch_description():
         rsp,
         gazebo,
         spawn_entity,
-        nodeRobotStatePublisher,
+        # nodeRobotStatePublisher,
         start_gazebo_ros_bridge_cmd,
-        # diff_drive_spawner,
-        # joint_broad_spawner,
+        diff_drive_spawner,
+        joint_broad_spawner,
     ])
