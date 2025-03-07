@@ -85,8 +85,14 @@ def generate_launch_description():
     spawnModelNodeGazebo = Node(
         package='ros_gz_sim',
         executable='create',
-        arguments=['-topic', 'robot_description', '-name', robotXacroName],
-        output='screen'
+        arguments=[
+            '-topic', 'robot_description',
+            '-name', robotXacroName
+        ],
+        output='screen',
+        parameters=[
+            {'use_sim_time': True},
+        ]
     )
     
     # this is very important so we can control the robot from ROS2
@@ -126,8 +132,16 @@ def generate_launch_description():
         name='rviz2',
         output='log',
         arguments=['-d', rviz_config_file],
+        parameters=[
+            {'use_sim_time': True},
+        ]
     )
 
+    # auto set for joint_state_publisher_gui
+    joint_state_publisher_gui_node = Node(
+        package='joint_state_publisher_gui',
+        executable='joint_state_publisher_gui',
+    ) 
 
     # Launch them all!
     return LaunchDescription([
@@ -139,5 +153,6 @@ def generate_launch_description():
         # nodeRobotStatePublisher,
         start_gazebo_ros_bridge_cmd,
         joystick,
-        rviz
+        rviz,
+        # joint_state_publisher_gui_node,
     ])

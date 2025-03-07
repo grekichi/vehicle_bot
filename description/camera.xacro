@@ -4,15 +4,25 @@
     <joint name="camera_joint" type="fixed">
         <parent link="chassis"/>
         <child link="camera_link"/>
-        <origin xyz="0.225 0 0.041" rpy="0 0 0"/>
+        <origin xyz="0.192 0 0.097" rpy="0 0 0"/>
     </joint>
 
     <link name="camera_link">
-        <visual>
+        <pose>0 0 0 0 0 0</pose>
+
+        <collision name='collision'>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
             <geometry>
-                <box size="0.01 0.03 0.03"/>
+                <box size="0.018 0.07 0.03"/>
             </geometry>
-            <material name="red"/>
+        </collision>
+
+        <visual name='camera_link_visual'>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <box size="0.018 0.07 0.03"/>
+            </geometry>
+            <material name="black"/>
         </visual>
     </link>
 
@@ -26,19 +36,19 @@
     
     
     <gazebo reference="camera_link_optical">
-        <material>Gazebo/Red</material>
+        <material>Gazebo/Black</material>
         <!-- <plugin filename="gz-sim-sensors-system" name="gz::sim::systems::Sensors">
             <render_engine>ogre2</render_engine>
         </plugin> -->
 
-        <sensor name="camera_link_optical" type="camera">
+        <sensor name="camera" type="camera">
             <pose> 0 0 0 ${pi/2} ${-pi/2} 0 </pose>
-            <always_on>true</always_on>
+            <always_on>1</always_on>
             <visualize>true</visualize>
             <update_rate>10</update_rate>
             <topic>camera</topic>
-            <gz_frame_id>camera_link_optical</gz_frame_id>
-            <camera>
+            <optical_frame_id>camera_link_optical</optical_frame_id>
+            <camera name="logicool_c270n">
                 <camera_info_topic>camera/camera_info</camera_info_topic>
                 <horizontal_fov>1.089</horizontal_fov>  <!-- this unit is radians -->
                 <image>

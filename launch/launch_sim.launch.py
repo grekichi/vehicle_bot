@@ -100,7 +100,7 @@ def generate_launch_description():
     bridge_params = os.path.join(
         get_package_share_directory(package_name),
         'parameters',
-        'gz_bridge.yaml'
+        'gz_bridge_4sim.yaml'
     )
 
     start_gazebo_ros_bridge_cmd = Node(
