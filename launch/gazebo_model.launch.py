@@ -91,7 +91,7 @@ def generate_launch_description():
         ],
         output='screen',
         parameters=[
-            {'use_sim_time': True},
+            {'use_sim_time': LaunchConfiguration('use_sim_time')},
         ]
     )
     
@@ -111,7 +111,7 @@ def generate_launch_description():
             f'config_file:={bridge_params}',
         ],
         output='screen',
-        parameters=[{'use_sim_time': True}],
+        parameters=[{'use_sim_time': LaunchConfiguration('use_sim_time')}],
     )
 
     # ros_gz_image setting
@@ -121,7 +121,7 @@ def generate_launch_description():
         arguments=['/camera/image'],
         output='screen',
         parameters=[
-            {'use_sim_time': True,
+            {'use_sim_time': LaunchConfiguration('use_sim_time'),
             'camera.image.compressed.jpeg_quality': 75},
         ],
     )
@@ -133,7 +133,7 @@ def generate_launch_description():
         name='relay_camera_info',
         output='screen',
         arguments=['camera/camera_info', 'camera/image/camera_info'],
-        parameters=[{'use_sim_time': True}],
+        parameters=[{'use_sim_time': LaunchConfiguration('use_sim_time')}],
     )
 
     # joystick set
@@ -156,7 +156,7 @@ def generate_launch_description():
         output='log',
         arguments=['-d', rviz_config_file],
         parameters=[
-            {'use_sim_time': True},
+            {'use_sim_time': LaunchConfiguration('use_sim_time')},
         ]
     )
 
