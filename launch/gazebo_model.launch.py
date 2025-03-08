@@ -102,7 +102,7 @@ def generate_launch_description():
         'gz_bridge.yaml'
     )
 
-    start_gazebo_ros_bridge_cmd = Node(
+    gz_ros_bridge_cmd = Node(
         package='ros_gz_bridge',
         executable='parameter_bridge',
         arguments=[
@@ -111,6 +111,29 @@ def generate_launch_description():
             f'config_file:={bridge_params}',
         ],
         output='screen',
+        parameters=[{'use_sim_time': True}],
+    )
+
+    # ros_gz_image setting
+    gz_ros_image_bridge_cmd = Node(
+        package='ros_gz_image',
+        executable='image_bridge',
+        arguments=['/camera/image'],
+        output='screen',
+        parameters=[
+            {'use_sim_time': True,
+            'camera.image.compressed.jpeg_quality': 75},
+        ],
+    )
+
+    # Relay node to republish /camera/camera_info to /camera/image/camera_info
+    relay_camera_info_node = Node(
+        package='topic_tools',
+        executable='relay',
+        name='relay_camera_info',
+        output='screen',
+        arguments=['camera/camera_info', 'camera/image/camera_info'],
+        parameters=[{'use_sim_time': True}],
     )
 
     # joystick set
@@ -137,12 +160,6 @@ def generate_launch_description():
         ]
     )
 
-    # auto set for joint_state_publisher_gui
-    joint_state_publisher_gui_node = Node(
-        package='joint_state_publisher_gui',
-        executable='joint_state_publisher_gui',
-    ) 
-
     # Launch them all!
     return LaunchDescription([
         setLaunchConfig,
@@ -151,8 +168,9 @@ def generate_launch_description():
         gazebo,
         spawnModelNodeGazebo,
         # nodeRobotStatePublisher,
-        start_gazebo_ros_bridge_cmd,
+        gz_ros_bridge_cmd,
+        gz_ros_image_bridge_cmd, # addition
+        relay_camera_info_node, # addition
         joystick,
         rviz,
-        # joint_state_publisher_gui_node,
     ])

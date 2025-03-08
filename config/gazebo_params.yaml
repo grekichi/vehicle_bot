@@ -2,5 +2,5 @@ gazebo:
   ros__parameters:
     publish_rate: 400.0
 
-    use_stamped_vel: true
+    # use_stamped_vel: true
     
