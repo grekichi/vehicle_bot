@@ -9,28 +9,14 @@ from launch.substitutions import TextSubstitution, LaunchConfiguration
 
 from launch_ros.actions import Node
 
-import xacro
-
 
 def generate_launch_description():
     # Include the robot_state_publisher launch file, provided by our own package. Force sim time to be enabled
     # !!! MAKE SURE YOU SET THE PACKAGE NAME CORRECTLY !!!
 
-    package_name='vehicle_bot' #<--- CHANGE ME
+    package_name='vehicle_bot' #<--- If folder name changed, you should change here
 
-    # this is a relative path to the xacro file defining the model
-    modelFileRelativePath = 'description/robot_core.xacro'
-
-    # this is the absolute path to the model
-    pathModelFile = os.path.join(
-        get_package_share_directory(package_name),
-        modelFileRelativePath
-        )
-
-    # get the robot description from the xacro model file
-    robotDescription = xacro.process_file(pathModelFile).toxml()
-
-
+    # robot state publisher node 
     rsp = IncludeLaunchDescription(
                 PythonLaunchDescriptionSource(os.path.join(
                     get_package_share_directory(package_name),'launch','rsp.launch.py')),
@@ -75,12 +61,11 @@ def generate_launch_description():
 
     # Include the Gazebo launch file, provided by the gazebo_ros package
     gazebo = IncludeLaunchDescription(
-                PythonLaunchDescriptionSource(
-                    os.path.join(
+                PythonLaunchDescriptionSource([os.path.join(
                         get_package_share_directory('ros_gz_sim'),
                         'launch',
                         'gz_sim.launch.py')
-                        ),
+                        ]),
                 launch_arguments={
                     'gz_args': gz_args,
                     'on_exit_shutdown': 'true',
@@ -96,23 +81,9 @@ def generate_launch_description():
             '-topic', 'robot_description',
             '-name', 'my_bot',
             ],
-        output='screen'
+        output='screen',
     )
     
-
-    # # Robot State Publisher Node
-    # nodeRobotStatePublisher = Node(
-    #     package='robot_state_publisher',
-    #     executable='robot_state_publisher',
-    #     output='screen',
-    #     parameters=[
-    #         {
-    #             'robot_description': robotDescription,
-    #             'use_sim_time': True
-    #         }
-    #     ]
-    # )
-
     # this is very important so we can control the robot from ROS2
     bridge_params = os.path.join(
         get_package_share_directory(package_name),
@@ -129,7 +100,7 @@ def generate_launch_description():
             f'config_file:={bridge_params}',
         ],
         output='screen',
-        # parameters=[{'use_sim_time': LaunchConfiguration('use_sim_time')}],
+        parameters=[{'use_sim_time': LaunchConfiguration('use_sim_time')}],
     )
 
     # ros_gz_image setting

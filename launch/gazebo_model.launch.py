@@ -118,7 +118,7 @@ def generate_launch_description():
     gz_ros_image_bridge_cmd = Node(
         package='ros_gz_image',
         executable='image_bridge',
-        arguments=['/camera/image'],
+        arguments=['/camera/image_raw'],
         output='screen',
         parameters=[
             {'use_sim_time': LaunchConfiguration('use_sim_time'),
@@ -143,7 +143,16 @@ def generate_launch_description():
                     'launch',
                     'joystick.launch.py')]),
                 launch_arguments={'use_sim_time': 'true'}.items()
-    )
+                )
+
+    # addition of teleop twist keyboard 
+    teleop_keyboard = Node(
+        package="teleop_twist_keyboard",
+        executable="teleop_twist_keyboard",
+        prefix="xterm -e",
+        parameters=[{'stamped': True}],
+        remappings=[('cmd_vel', '/diff_cont/cmd_vel')]
+        )
 
     # rviz2 load setting
     rviz_config_file = os.path.join(
@@ -171,6 +180,7 @@ def generate_launch_description():
         gz_ros_bridge_cmd,
         gz_ros_image_bridge_cmd, # addition
         relay_camera_info_node, # addition
-        joystick,
+        # joystick,
+        teleop_keyboard,
         rviz,
     ])

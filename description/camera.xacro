@@ -35,18 +35,15 @@
     <link name="camera_link_optical"></link>
     
     
-    <gazebo reference="camera_link_optical">
+    <gazebo reference="camera_link">
         <material>Gazebo/Black</material>
-        <!-- <plugin filename="gz-sim-sensors-system" name="gz::sim::systems::Sensors">
-            <render_engine>ogre2</render_engine>
-        </plugin> -->
 
         <sensor name="camera" type="camera">
-            <pose> 0 0 0 ${pi/2} ${-pi/2} 0 </pose>
+            <pose> 0 0 0 0 0 0 </pose>
             <always_on>true</always_on>
             <visualize>true</visualize>
             <update_rate>10</update_rate>
-            <topic>camera/image</topic>
+            <topic>camera/image_raw</topic>
             <gz_frame_id>camera_link_optical</gz_frame_id>
             <camera name="logicool_c270n">
                 <camera_info_topic>camera/camera_info</camera_info_topic>

@@ -30,34 +30,37 @@ def generate_launch_description():
     parameter_file = LaunchConfiguration('params_file')
     node_name = 'ydlidar_ros2_driver_node'
 
-    params_declare = DeclareLaunchArgument('params_file',
-                                           default_value=os.path.join(
-                                               share_dir, 'params', 'TminiPro.yaml'),
-                                           description='FPath to the ROS2 parameters file to use.')
+    params_declare = DeclareLaunchArgument(
+        'params_file',
+        default_value=os.path.join(share_dir, 'params', 'TminiPro.yaml'),
+        description='FPath to the ROS2 parameters file to use.',
+        )
 
-    driver_node = LifecycleNode(package='ydlidar_ros2_driver',
-                                executable=node_name,
-                                name=node_name,
-                                output='screen',
-                                emulate_tty=True,
-                                parameters=[parameter_file],
-                                namespace='/',
-                                )
+    driver_node = LifecycleNode(
+        package='ydlidar_ros2_driver',
+        executable=node_name,
+        name=node_name,
+        output='screen',
+        emulate_tty=True,
+        parameters=[parameter_file],
+        namespace='/',
+        )
     
-    tf2_node = Node(package='tf2_ros',
-                    executable='static_transform_publisher',
-                    name='static_tf_pub_laser',
-                    arguments=[
-                        '--x', '0',
-                        '--y', '0',
-                        '--z', '0.02',
-                        '--yaw', '0',
-                        '--pitch', '0',
-                        '--roll', '0',
-                        '--frame-id', 'base_link',
-                        '--child-frame-id', 'laser_frame'
-                        ],
-                    )
+    tf2_node = Node(
+        package='tf2_ros',
+        executable='static_transform_publisher',
+        name='static_tf_pub_laser',
+        arguments=[
+            '--x', '0.11',
+            '--y', '0',
+            '--z', '0.127',
+            '--yaw', '0',
+            '--pitch', '0',
+            '--roll', '0',
+            '--frame-id', 'chassis',
+            '--child-frame-id', 'laser_frame',
+            ],
+        )
 
     return LaunchDescription([
         params_declare,
