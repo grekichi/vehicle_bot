@@ -59,6 +59,7 @@
     <gazebo>
         <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
             <parameters>$(find vehicle_bot)/config/my_controllers.yaml</parameters>
+            <parameters>$(find vehicle_bot)/config/gz_ros2_ctl_use_sim.yaml</parameters>
             <controller_manager_prefix_node_name>controller_manager</controller_manager_prefix_node_name>
         </plugin>
     </gazebo>

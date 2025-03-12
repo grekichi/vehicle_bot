@@ -151,7 +151,7 @@ def generate_launch_description():
         executable="teleop_twist_keyboard",
         prefix="xterm -e",
         parameters=[{'stamped': True}],
-        remappings=[('cmd_vel', '/diff_cont/cmd_vel')]
+        # remappings=[('cmd_vel', '/diff_cont/cmd_vel')]
         )
 
     # rviz2 load setting

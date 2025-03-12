@@ -21,7 +21,11 @@ def generate_launch_description():
     rsp = IncludeLaunchDescription(
                 PythonLaunchDescriptionSource([os.path.join(
                     get_package_share_directory(package_name),'launch','rsp.launch.py'
-                )]), launch_arguments={'use_sim_time': 'false', 'use_ros2_control': 'true'}.items()
+                )]),
+                launch_arguments={
+                    'use_sim_time': 'false',
+                    'use_ros2_control': 'true'
+                    }.items(),
         )
 
     joystick = IncludeLaunchDescription(
@@ -29,14 +33,14 @@ def generate_launch_description():
                     get_package_share_directory(package_name),'launch','joystick.launch.py')])
         )
     
-    # addition of teleop twist keyboard 
-    teleop_keyboard = Node(
-        package="teleop_twist_keyboard",
-        executable="teleop_twist_keyboard",
-        prefix="xterm -e",
-        parameters=[{'stamped': True}],
-        remappings=[('cmd_vel', '/diff_cont/cmd_vel')]
-        )
+    # # addition of teleop twist keyboard 
+    # teleop_keyboard = Node(
+    #     package="teleop_twist_keyboard",
+    #     executable="teleop_twist_keyboard",
+    #     prefix="xterm -e",
+    #     parameters=[{'stamped': True}],
+    #     remappings=[('cmd_vel', '/diff_cont/cmd_vel')]
+    #     )
 
 
     # twist_mux section

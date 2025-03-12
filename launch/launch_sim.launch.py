@@ -14,6 +14,9 @@ def generate_launch_description():
     # Include the robot_state_publisher launch file, provided by our own package. Force sim time to be enabled
     # !!! MAKE SURE YOU SET THE PACKAGE NAME CORRECTLY !!!
 
+    # this name has to match the robot name in the Xacro file
+    robotXacroName='differential_drive_robot'
+
     package_name='vehicle_bot' #<--- If folder name changed, you should change here
 
     # robot state publisher node 
@@ -26,14 +29,6 @@ def generate_launch_description():
                     }.items(),
     )
 
-    # # addition of teleop twist keyboard 
-    # teleop_keyboard = Node(
-    #     package="teleop_twist_keyboard",
-    #     executable="teleop_twist_keyboard",
-    #     prefix="xterm -e",
-    #     parameters=[{'stamped': True}],
-    #     remappings=[('cmd_vel', '/diff_cont/cmd_vel')]
-    # )
 
     """ Gazebo modify sentence """
     gz_model_path = os.path.join(get_package_share_directory(package_name), 'worlds')
@@ -72,14 +67,14 @@ def generate_launch_description():
                     'extra_gazebo_args': '--ros-args --params-file ' + gazebo_params_file,
                     }.items()
              )
-
+    
     # Run the spawner node from the gazebo_ros package. The entity name doesn't really matter if you only have a single robot.
     spawn_entity = Node(
         package='ros_gz_sim',
         executable='create',
         arguments=[
             '-topic', 'robot_description',
-            '-name', 'my_bot',
+            '-name', robotXacroName,
             ],
         output='screen',
     )
@@ -98,59 +93,57 @@ def generate_launch_description():
             '--ros-args',
             '-p',
             f'config_file:={bridge_params}',
-        ],
-        output='screen',
-        parameters=[{'use_sim_time': LaunchConfiguration('use_sim_time')}],
-    )
+            ],
+        )
 
     # ros_gz_image setting
     gz_ros_image_bridge_cmd = Node(
         package='ros_gz_image',
         executable='image_bridge',
-        arguments=['/camera/image'],
-        output='screen',
-        parameters=[
-            {'use_sim_time': LaunchConfiguration('use_sim_time'),
-            'camera.image.compressed.jpeg_quality': 75},
-        ],
-    )
+        arguments=['/camera/image_raw'],
+        )
 
     # Relay node to republish /camera/camera_info to /camera/image/camera_info
     relay_camera_info_node = Node(
         package='topic_tools',
         executable='relay',
         name='relay_camera_info',
-        output='screen',
-        arguments=['camera/camera_info', 'camera/image/camera_info'],
-        parameters=[{'use_sim_time': LaunchConfiguration('use_sim_time')}],
-    )
+        arguments=['/camera/camera_info', '/camera/image/camera_info'],
+        )
 
     # additional portion
     diff_drive_spawner = Node(
         package='controller_manager',
         executable='spawner',
         arguments=["diff_cont"],
-    )
+        )
 
     joint_broad_spawner = Node(
         package='controller_manager',
         executable='spawner',
         arguments=["joint_broad"],
-    )
+        )
 
+    # addition of teleop twist keyboard 
+    teleop_keyboard = Node(
+        package="teleop_twist_keyboard",
+        executable="teleop_twist_keyboard",
+        prefix="xterm -e",
+        parameters=[{'stamped': True}],
+        remappings=[('/cmd_vel', '/diff_cont/cmd_vel')]
+    )
 
     # Launch them all!
     return LaunchDescription([
         setLaunchConfig,
         setEnvVariable,
         rsp,
-        # teleop_keyboard,
         gazebo,
         spawn_entity,
-        # nodeRobotStatePublisher,
         gz_ros_bridge_cmd,
         gz_ros_image_bridge_cmd,
         relay_camera_info_node,
         diff_drive_spawner,
         joint_broad_spawner,
+        teleop_keyboard,
     ])
