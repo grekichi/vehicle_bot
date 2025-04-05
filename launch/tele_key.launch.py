@@ -13,35 +13,18 @@ import xacro
 def generate_launch_description():
 
     use_sim_time = LaunchConfiguration('use_sim_time')
-    set_vel = LaunchConfiguration('set_vel')
-
-    joy_params = os.path.join(
-        get_package_share_directory('vehicle_bot'),
-        'config',
-        'joystick_ps.yaml',
-        )
-
-    joy_node = Node(
-        package='joy',
-        executable='joy_node',
-        parameters=[
-            joy_params,
-            {'use_sim_time': use_sim_time},
-        ],
-    )
 
     teleop_node = Node(
-        package='teleop_twist_joy',
-        executable='teleop_node',
-        name='teleop_node',
+        package="teleop_twist_keyboard",
+        executable="teleop_twist_keyboard",
+        prefix="xterm -e",
         parameters=[
-            joy_params,
             {
-                'use_sim_time': use_sim_time,
-                'publish_stamped_twist': True,
+                "use_sim_time": use_sim_time,
+                "stamped": True,
             },
         ],
-        remappings=[('/cmd_vel', set_vel)],
+        remappings=[('/cmd_vel', '/diff_cont/cmd_vel')],
     )
 
     # twist_stamper = Node(
@@ -62,13 +45,6 @@ def generate_launch_description():
             description='Use sim time if true'
         ),
 
-        DeclareLaunchArgument(
-            'set_vel',
-            default_value='/diff_cont/cmd_vel',
-            description='set vel for each launch method'
-        ),
-
-        joy_node,
         teleop_node,
         # twist_stamper,
     ])

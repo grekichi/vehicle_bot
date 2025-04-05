@@ -44,9 +44,23 @@ def generate_launch_description():
     rsp = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([os.path.join(
             get_package_share_directory(package_name), 'launch', 'rsp.launch.py')]),
-        launch_arguments={'use_sim_time': 'true', 'use_ros2_control': 'false'}.items()
+        launch_arguments={
+            'use_sim_time': 'true',
+            'use_ros2_control': 'false',
+            }.items()
         )
 
+    # joystick set
+    joystick = IncludeLaunchDescription(
+                PythonLaunchDescriptionSource([os.path.join(
+                    get_package_share_directory(package_name), 'launch', 'joystick.launch.py'),
+                    ]),
+                launch_arguments={
+                    'use_sim_time': 'true',
+                    'set_vel': '/cmd_vel',
+                    }.items(),
+                )
+    
     """ Gazebo modify sentence """
     gz_model_path = os.path.join(get_package_share_directory(package_name), 'worlds')
 
@@ -79,7 +93,7 @@ def generate_launch_description():
                         'on_exit_shutdown': 'true',
                         'extra_gazebo_args': '--ros-args --params-file ' + gazebo_params_file,
                     }.items(),
-    )
+        )
 
     # Run the spawner node from the gazebo_ros package. The entity name doesn't really matter if you only have a single robot.
     spawnModelNodeGazebo = Node(
@@ -90,9 +104,7 @@ def generate_launch_description():
             '-name', robotXacroName
         ],
         output='screen',
-        parameters=[
-            {'use_sim_time': LaunchConfiguration('use_sim_time')},
-        ]
+        parameters=[{'use_sim_time': LaunchConfiguration('use_sim_time')},]
     )
     
     # this is very important so we can control the robot from ROS2
@@ -136,14 +148,6 @@ def generate_launch_description():
         parameters=[{'use_sim_time': LaunchConfiguration('use_sim_time')}],
     )
 
-    # joystick set
-    joystick = IncludeLaunchDescription(
-                PythonLaunchDescriptionSource([os.path.join(
-                    get_package_share_directory(package_name),
-                    'launch',
-                    'joystick.launch.py')]),
-                launch_arguments={'use_sim_time': 'true'}.items()
-                )
 
     # addition of teleop twist keyboard 
     teleop_keyboard = Node(
@@ -151,7 +155,7 @@ def generate_launch_description():
         executable="teleop_twist_keyboard",
         prefix="xterm -e",
         parameters=[{'stamped': True}],
-        # remappings=[('cmd_vel', '/diff_cont/cmd_vel')]
+        # remappings=[('/cmd_vel', '/cmd_vel')]
         )
 
     # rviz2 load setting
@@ -174,13 +178,13 @@ def generate_launch_description():
         setLaunchConfig,
         setEnvVariable,
         rsp,
+        # joystick,
         gazebo,
         spawnModelNodeGazebo,
         # nodeRobotStatePublisher,
         gz_ros_bridge_cmd,
         gz_ros_image_bridge_cmd, # addition
         relay_camera_info_node, # addition
-        # joystick,
         teleop_keyboard,
         rviz,
     ])

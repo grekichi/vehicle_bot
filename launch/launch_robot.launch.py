@@ -30,7 +30,9 @@ def generate_launch_description():
 
     joystick = IncludeLaunchDescription(
                 PythonLaunchDescriptionSource([os.path.join(
-                    get_package_share_directory(package_name),'launch','joystick.launch.py')])
+                    get_package_share_directory(package_name),'launch','joystick.launch.py')
+                    ]),
+                    launch_arguments={'use_sim_time': 'false'}.items(),
         )
     
     # # addition of teleop twist keyboard 
@@ -54,7 +56,7 @@ def generate_launch_description():
             package="twist_mux",
             executable="twist_mux",
             parameters=[twist_mux_params],
-            remappings=[('/cmd_vel_out','/diff_cont/cmd_vel')]
+            remappings=[('/cmd_vel_out','/diff_cont/cmd_vel_unstamped')]
         )
 
     # delayed_controller_manager section
@@ -65,8 +67,10 @@ def generate_launch_description():
     controller_manager = Node(
         package="controller_manager",
         executable="ros2_control_node",
-        parameters=[{'robot_description': robot_description},
-                    controller_params_file]
+        parameters=[
+            {'robot_description': robot_description},
+            controller_params_file
+            ]
         )
 
     delayed_controller_manager = TimerAction(period=3.0, actions=[controller_manager])

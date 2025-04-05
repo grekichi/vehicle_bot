@@ -21,14 +21,24 @@ def generate_launch_description():
 
     # robot state publisher node 
     rsp = IncludeLaunchDescription(
-                PythonLaunchDescriptionSource(os.path.join(
-                    get_package_share_directory(package_name),'launch','rsp.launch.py')),
+                PythonLaunchDescriptionSource([os.path.join(
+                    get_package_share_directory(package_name),'launch','rsp.launch.py')
+                    ]),
                 launch_arguments={
                     'use_sim_time': 'true',
                     'use_ros2_control': 'true',
                     }.items(),
-    )
+        )
 
+    joystick = IncludeLaunchDescription(
+                PythonLaunchDescriptionSource([os.path.join(
+                    get_package_share_directory(package_name),'launch','joystick.launch.py')
+                    ]),
+                launch_arguments={
+                    'use_sim_time': 'true',
+                    'set_vel' : '/diff_cont/cmd_vel',
+                    }.items(),
+        )
 
     """ Gazebo modify sentence """
     gz_model_path = os.path.join(get_package_share_directory(package_name), 'worlds')
@@ -138,6 +148,7 @@ def generate_launch_description():
         setLaunchConfig,
         setEnvVariable,
         rsp,
+        # joystick,
         gazebo,
         spawn_entity,
         gz_ros_bridge_cmd,
