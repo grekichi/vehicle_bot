@@ -55,8 +55,11 @@ def generate_launch_description():
     twist_mux = Node(
             package="twist_mux",
             executable="twist_mux",
-            parameters=[twist_mux_params],
-            remappings=[('/cmd_vel_out','/diff_cont/cmd_vel_unstamped')]
+            parameters=[
+                twist_mux_params,
+                {'use_stamped': True},
+                ],
+            remappings=[('/cmd_vel_out','/diff_cont/cmd_vel')]
         )
 
     # delayed_controller_manager section
@@ -126,7 +129,7 @@ def generate_launch_description():
     return LaunchDescription([
         rsp,
         joystick,
-        # twist_mux,
+        twist_mux,
         delayed_controller_manager,
         delayed_diff_drive_spawner,
         delayed_joint_broad_spawner

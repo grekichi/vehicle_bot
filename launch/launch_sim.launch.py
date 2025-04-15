@@ -35,7 +35,6 @@ def generate_launch_description():
                     get_package_share_directory(package_name),'launch','joystick.launch.py')
                     ]),
                 launch_arguments={
-                    'use_sim_time': 'true',
                     'set_vel' : '/diff_cont/cmd_vel',
                     }.items(),
         )
@@ -44,7 +43,7 @@ def generate_launch_description():
     gz_model_path = os.path.join(get_package_share_directory(package_name), 'worlds')
 
     # if you create your original sdf, you should set this name
-    sdf_file_name = 'vehicle_test.sdf'
+    sdf_file_name = 'tennis_ball.sdf'  # 'vehicle_test.sdf'
 
     setLaunchConfig = SetLaunchConfiguration(
         name='sdf_file',
@@ -110,15 +109,44 @@ def generate_launch_description():
     gz_ros_image_bridge_cmd = Node(
         package='ros_gz_image',
         executable='image_bridge',
+        output='screen',
         arguments=['/camera/image_raw'],
+        parameters=[
+            {
+                'use_sim_time': True,
+                'camera.image.compressed.jpeg_quality': 75
+            },
+        ]
         )
 
-    # Relay node to republish /camera/camera_info to /camera/image/camera_info
+    # Relay node to republish /camera/camera_info to /camera/image_raw/camera_info
     relay_camera_info_node = Node(
         package='topic_tools',
         executable='relay',
         name='relay_camera_info',
-        arguments=['/camera/camera_info', '/camera/image/camera_info'],
+        output='screen',
+        arguments=['/camera/camera_info', '/camera/image_raw/camera_info'],
+        parameters=[{'use_sim_time': True}],
+        )
+
+    # twist_mux section
+    twist_mux_params = os.path.join(
+        get_package_share_directory(package_name),
+        'config',
+        'twist_mux.yaml'
+        )
+    
+    twist_mux = Node(
+            package="twist_mux",
+            executable="twist_mux",
+            parameters=[
+                twist_mux_params,
+                {
+                    'use_sim_time': True,
+                    'use_stamped': True,
+                },
+                ],
+            remappings=[('/cmd_vel_out','/diff_cont/cmd_vel')]
         )
 
     # additional portion
@@ -140,8 +168,11 @@ def generate_launch_description():
         executable="teleop_twist_keyboard",
         prefix="xterm -e",
         parameters=[{'stamped': True}],
-        remappings=[('/cmd_vel', '/diff_cont/cmd_vel')]
+        # remappings=[('/cmd_vel', '/diff_cont/cmd_vel')],
+        remappings=[('/cmd_vel', '/cmd_vel_key')],
     )
+
+
 
     # Launch them all!
     return LaunchDescription([
@@ -157,4 +188,5 @@ def generate_launch_description():
         diff_drive_spawner,
         joint_broad_spawner,
         teleop_keyboard,
+        twist_mux,
     ])

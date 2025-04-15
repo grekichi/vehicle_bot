@@ -41,7 +41,9 @@ def generate_launch_description():
                 'publish_stamped_twist': True,
             },
         ],
-        remappings=[('/cmd_vel', set_vel)],
+        # remappings=[('/cmd_vel', set_vel)],
+        remappings=[('/cmd_vel', '/cmd_vel_joy')],
+
     )
 
     # twist_stamper = Node(
@@ -62,11 +64,11 @@ def generate_launch_description():
             description='Use sim time if true'
         ),
 
-        DeclareLaunchArgument(
-            'set_vel',
-            default_value='/diff_cont/cmd_vel',
-            description='set vel for each launch method'
-        ),
+        # DeclareLaunchArgument(
+        #     'set_vel',
+        #     default_value='/diff_cont/cmd_vel',
+        #     description='set vel for each launch method'
+        # ),
 
         joy_node,
         teleop_node,

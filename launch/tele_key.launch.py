@@ -24,7 +24,9 @@ def generate_launch_description():
                 "stamped": True,
             },
         ],
-        remappings=[('/cmd_vel', '/diff_cont/cmd_vel')],
+        # remappings=[('/cmd_vel', '/diff_cont/cmd_vel')],
+        remappings=[('/cmd_vel', '/cmd_vel_key')],
+
     )
 
     # twist_stamper = Node(
